@@ -1,6 +1,8 @@
 # Dependencies
 node_modules/
+**/node_modules/
 
+package-lock.json
 # Logs and temp files
 *.log
 *.tmp
@@ -185,3 +187,5 @@ julia-*/
 
 # Zig
 zig*/
+# Кэш компилятора TypeScript (тот самый файл 6)
+*.tsbuildinfo
