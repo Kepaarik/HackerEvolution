@@ -1,0 +1,400 @@
+import { useState, useEffect, useCallback } from 'react';
+import { GameState, defaultState, generatorsData, upgradesData, achievementsData, calculateGeneratorCost, chapterRequirements, FirewallGame } from './types';
+
+const SAVE_KEY = 'hackerEvolutionSave';
+
+export function useGame() {
+  const [gameState, setGameState] = useState<GameState>(() => {
+    // Загрузка сохранения
+    const saved = localStorage.getItem(SAVE_KEY);
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error('Failed to load save:', e);
+      }
+    }
+    return defaultState;
+  });
+
+  const [incomePerSecond, setIncomePerSecond] = useState(0);
+  const [clickPower, setClickPower] = useState(1);
+  const [unlockedAchievements, setUnlockedAchievements] = useState<string[]>([]);
+  const [showFirewallModal, setShowFirewallModal] = useState(false);
+
+  // Проверка достижений
+  useEffect(() => {
+    const newAchievements: string[] = [];
+    achievementsData.forEach(achievement => {
+      if (!gameState.achievements[achievement.id] && achievement.condition(gameState)) {
+        newAchievements.push(achievement.id);
+      }
+    });
+
+    if (newAchievements.length > 0) {
+      setGameState(prev => ({
+        ...prev,
+        achievements: {
+          ...prev.achievements,
+          ...Object.fromEntries(newAchievements.map(id => [id, true])),
+        },
+      }));
+      setUnlockedAchievements(prev => [...prev, ...newAchievements]);
+      
+      // Показываем уведомление о каждом достижении
+      newAchievements.forEach(id => {
+        const achievement = achievementsData.find(a => a.id === id);
+        if (achievement) {
+          console.log(`🏆 Достижение разблокировано: ${achievement.name}`);
+        }
+      });
+      
+      // Очищаем список уведомлений через 3 секунды
+      setTimeout(() => {
+        setUnlockedAchievements(prev => prev.filter(a => !newAchievements.includes(a)));
+      }, 3000);
+    }
+  }, [gameState.money, gameState.clickCount, gameState.generators, gameState.upgrades]);
+
+  // Обработка таймера мини-игры фаервола
+  useEffect(() => {
+    if (!gameState.firewallGame || !gameState.firewallGame.isActive) return;
+
+    const interval = setInterval(() => {
+      setGameState(prev => {
+        if (!prev.firewallGame) return prev;
+        
+        const newTimeLeft = prev.firewallGame.timeLeft - 0.1;
+        
+        if (newTimeLeft <= 0) {
+          // Время вышло - провал
+          const failCallback = prev.firewallGame.onFail;
+          failCallback();
+          return {
+            ...prev,
+            firewallGame: null,
+          };
+        }
+        
+        return {
+          ...prev,
+          firewallGame: {
+            ...prev.firewallGame,
+            timeLeft: newTimeLeft,
+          },
+        };
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [gameState.firewallGame?.isActive]);
+
+  // Расчет дохода в секунду и силы клика
+  useEffect(() => {
+    let income = 0;
+    let click = 1;
+
+    // Расчет дохода от генераторов
+    generatorsData.forEach(gen => {
+      const count = gameState.generators[gen.id] || 0;
+      if (count > 0) {
+        let genIncome = gen.baseIncome * count;
+        
+        // Применяем множители от улучшений
+        upgradesData.forEach(upgrade => {
+          if (upgrade.purchased) {
+            if (upgrade.targetGenerator === gen.id) {
+              genIncome *= upgrade.multiplier;
+            } else if (upgrade.appliesToAll) {
+              genIncome *= upgrade.multiplier;
+            }
+          }
+        });
+        
+        income += genIncome;
+      }
+    });
+
+    // Применяем множитель престижа
+    income *= gameState.prestigeMultiplier;
+
+    // Расчет силы клика
+    upgradesData.forEach(upgrade => {
+      if (upgrade.purchased && upgrade.clickMultiplier) {
+        click *= upgrade.multiplier;
+      }
+    });
+
+    // Бонус от престижа к клику
+    click *= (1 + gameState.reputation * 0.1);
+
+    setIncomePerSecond(income);
+    setClickPower(click);
+  }, [gameState]);
+
+  // Сохранение игры
+  useEffect(() => {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(gameState));
+  }, [gameState]);
+
+  // Игровой цикл - начисление дохода
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (incomePerSecond > 0) {
+        setGameState(prev => ({
+          ...prev,
+          money: prev.money + incomePerSecond / 10,
+          totalMoneyEarned: prev.totalMoneyEarned + incomePerSecond / 10,
+        }));
+      }
+    }, 100); // Обновление 10 раз в секунду для плавности
+
+    return () => clearInterval(interval);
+  }, [incomePerSecond]);
+
+  // Клик по главной кнопке
+  const handleClick = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      money: prev.money + clickPower,
+      totalMoneyEarned: prev.totalMoneyEarned + clickPower,
+      clickCount: prev.clickCount + 1,
+    }));
+  }, [clickPower]);
+
+  // Покупка генератора
+  const buyGenerator = useCallback((generatorId: string) => {
+    const generator = generatorsData.find(g => g.id === generatorId);
+    if (!generator) return;
+
+    const currentCount = gameState.generators[generatorId] || 0;
+    const cost = calculateGeneratorCost(generator.baseCost, currentCount);
+
+    if (gameState.money >= cost) {
+      setGameState(prev => ({
+        ...prev,
+        money: prev.money - cost,
+        generators: {
+          ...prev.generators,
+          [generatorId]: currentCount + 1,
+        },
+      }));
+    }
+  }, [gameState.money, gameState.generators]);
+
+  // Покупка улучшения
+  const buyUpgrade = useCallback((upgradeId: string) => {
+    const upgrade = upgradesData.find(u => u.id === upgradeId);
+    if (!upgrade || upgrade.purchased) return;
+
+    if (gameState.money >= upgrade.cost) {
+      setGameState(prev => ({
+        ...prev,
+        money: prev.money - upgrade.cost,
+        upgrades: {
+          ...prev.upgrades,
+          [upgradeId]: true,
+        },
+      }));
+    }
+  }, [gameState.money, gameState.upgrades]);
+
+  // Запуск мини-игры взлома фаервола
+  const startFirewallGame = useCallback((difficulty: 'easy' | 'medium' | 'hard', onSuccess: () => void, onFail: () => void) => {
+    let gridSize = 3;
+    let portsCount = 2;
+    let attempts = 3;
+    let timeLimit = 30;
+    let reward = 1000;
+
+    if (difficulty === 'medium') {
+      gridSize = 4;
+      portsCount = 3;
+      attempts = 4;
+      timeLimit = 25;
+      reward = 5000;
+    } else if (difficulty === 'hard') {
+      gridSize = 5;
+      portsCount = 4;
+      attempts = 5;
+      timeLimit = 20;
+      reward = 25000;
+    }
+
+    // Генерируем случайные порты
+    const ports: number[] = [];
+    while (ports.length < portsCount) {
+      const port = Math.floor(Math.random() * (gridSize * gridSize));
+      if (!ports.includes(port)) {
+        ports.push(port);
+      }
+    }
+
+    const firewallGame: FirewallGame = {
+      isActive: true,
+      gridSize,
+      ports,
+      selectedPorts: [],
+      attemptsLeft: attempts,
+      timeLeft: timeLimit,
+      reward,
+      onSuccess,
+      onFail,
+    };
+
+    setGameState(prev => ({
+      ...prev,
+      firewallGame,
+    }));
+    setShowFirewallModal(true);
+  }, []);
+
+  // Выбор порта в мини-игре
+  const selectPort = useCallback((portIndex: number) => {
+    setGameState(prev => {
+      if (!prev.firewallGame) return prev;
+
+      const game = prev.firewallGame;
+      if (game.selectedPorts.includes(portIndex)) {
+        // Уже выбран - deselect
+        return {
+          ...prev,
+          firewallGame: {
+            ...game,
+            selectedPorts: game.selectedPorts.filter(p => p !== portIndex),
+          },
+        };
+      }
+
+      const newSelected = [...game.selectedPorts, portIndex];
+      
+      // Проверяем условие победы: все порты найдены
+      const allPortsFound = game.ports.every(p => newSelected.includes(p));
+      
+      if (allPortsFound) {
+        // Победа!
+        const successCallback = game.onSuccess;
+        setTimeout(() => {
+          successCallback();
+          setShowFirewallModal(false);
+        }, 100);
+        
+        return {
+          ...prev,
+          money: prev.money + game.reward,
+          totalMoneyEarned: prev.totalMoneyEarned + game.reward,
+          firewallGame: null,
+        };
+      }
+
+      // Проверяем условие поражения: превышено количество попыток
+      const wrongSelections = newSelected.filter(p => !game.ports.includes(p)).length;
+      if (wrongSelections >= game.attemptsLeft) {
+        // Поражение
+        const failCallback = game.onFail;
+        setTimeout(() => {
+          failCallback();
+          setShowFirewallModal(false);
+        }, 100);
+        
+        return {
+          ...prev,
+          firewallGame: null,
+        };
+      }
+
+      return {
+        ...prev,
+        firewallGame: {
+          ...game,
+          selectedPorts: newSelected,
+          attemptsLeft: game.attemptsLeft - wrongSelections,
+        },
+      };
+    });
+  }, []);
+
+  // Закрытие мини-игры
+  const closeFirewallGame = useCallback(() => {
+    setGameState(prev => ({
+      ...prev,
+      firewallGame: null,
+    }));
+    setShowFirewallModal(false);
+  }, []);
+
+  // Проверка доступности следующей главы
+  const canUnlockNextChapter = useCallback(() => {
+    const nextChapterReq = chapterRequirements.find(r => r.chapter === gameState.currentChapter + 1);
+    if (!nextChapterReq) return false;
+
+    if (gameState.totalMoneyEarned < nextChapterReq.requiredMoney) return false;
+
+    for (const [genId, requiredCount] of Object.entries(nextChapterReq.requiredGenerators)) {
+      if ((gameState.generators[genId] || 0) < requiredCount) return false;
+    }
+
+    return true;
+  }, [gameState]);
+
+  // Переход к следующей главе
+  const unlockNextChapter = useCallback(() => {
+    if (canUnlockNextChapter()) {
+      setGameState(prev => ({
+        ...prev,
+        currentChapter: prev.currentChapter + 1,
+      }));
+    }
+  }, [canUnlockNextChapter]);
+
+  // Престиж (сброс прогресса за бонусы)
+  const doPrestige = useCallback(() => {
+    if (gameState.totalMoneyEarned < 1000000) return; // Минимум 1M для престижа
+
+    const reputationGain = Math.floor(Math.sqrt(gameState.totalMoneyEarned / 1000000));
+    
+    setGameState({
+      ...defaultState,
+      reputation: gameState.reputation + reputationGain,
+      prestigeMultiplier: 1 + (gameState.reputation + reputationGain) * 0.1,
+    });
+  }, [gameState]);
+
+  // Сброс сохранения
+  const resetGame = useCallback(() => {
+    if (confirm('Вы уверены? Весь прогресс будет потерян!')) {
+      setGameState(defaultState);
+      localStorage.removeItem(SAVE_KEY);
+    }
+  }, []);
+
+  // Получение доступных генераторов для текущей главы
+  const availableGenerators = generatorsData.filter(
+    g => g.chapter <= gameState.currentChapter
+  );
+
+  // Получение доступных улучшений
+  const availableUpgrades = upgradesData.filter(
+    u => !u.purchased && gameState.money >= u.cost * 0.5 // Показываем если есть хотя бы 50% стоимости
+  );
+
+  return {
+    gameState,
+    incomePerSecond,
+    clickPower,
+    handleClick,
+    buyGenerator,
+    buyUpgrade,
+    availableGenerators,
+    availableUpgrades,
+    canUnlockNextChapter,
+    unlockNextChapter,
+    doPrestige,
+    resetGame,
+    unlockedAchievements,
+    startFirewallGame,
+    selectPort,
+    closeFirewallGame,
+    showFirewallModal,
+  };
+}

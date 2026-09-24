@@ -1,0 +1,20 @@
+/* Индикатор доступной мини-игры на главном экране (Этап 5) */
+
+.minigame-teaser {
+  display: block;
+  margin: 14px auto 0;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(120, 220, 255, 0.7);
+  background: rgba(0, 40, 60, 0.85);
+  color: #bfeaff;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(80, 200, 255, 0.35);
+  word-break: break-word;
+}
+
+.minigame-teaser:hover {
+  background: rgba(0, 70, 100, 0.9);
+}

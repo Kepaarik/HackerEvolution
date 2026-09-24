@@ -1,0 +1,46 @@
+{
+  "version": "1.0",
+  "saved_at": "2026-09-18T15:38:22.029678",
+  "resource_data": {
+    "computations": 127,
+    "data": 0,
+    "quantum_cores": 0,
+    "source_code_fragments": 0,
+    "computations_earned_in_run": 1426,
+    "total_computations_earned": 1426
+  },
+  "generator_data": {
+    "generator_counts": {
+      "auto_clicker": 3,
+      "basic_script": 14
+    }
+  },
+  "upgrade_data": {
+    "purchased_upgrades": {
+      "enhanced_clicks": 1,
+      "basic_script_boost_1": 1
+    }
+  },
+  "achievement_data": {
+    "unlocked_achievements": [
+      "first_computations",
+      "first_generator"
+    ]
+  },
+  "prestige_data": {
+    "prestige_level": 0,
+    "quantum_cores": 0,
+    "source_code_fragments": 0,
+    "total_prestiges": 0
+  },
+  "quest_data": {
+    "active_quests": [],
+    "completed_quest_ids": [],
+    "last_daily_refresh": ""
+  },
+  "synergy_data": {
+    "unlocked_synergies": []
+  },
+  "play_time_seconds": 30354.477090000004,
+  "last_played_at": "2026-09-18T15:38:22.029712"
+}

@@ -1,0 +1,227 @@
+/* Модальное окно мини-игры (Этап 5) */
+
+.minigame-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000; /* поверх нижнего навбара (MobileNav) */
+  background: rgba(0, 0, 0, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px calc(16px + env(safe-area-inset-right)) calc(80px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));
+}
+
+.minigame-modal {
+  width: min(420px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  background: rgba(2, 14, 2, 0.97);
+  border: 1px solid rgba(0, 255, 70, 0.4);
+  border-radius: 12px;
+  padding: 16px;
+  color: #d8ffd8;
+  box-sizing: border-box;
+}
+
+.minigame-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.minigame-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.minigame-timer {
+  font-weight: bold;
+  color: #7fd8ff;
+  white-space: nowrap;
+}
+
+.minigame-timer-low {
+  color: #ff5f5f;
+  animation: minigame-blink 0.6s steps(2) infinite;
+}
+
+@keyframes minigame-blink {
+  50% { opacity: 0.4; }
+}
+
+.minigame-rules {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  margin: 10px 0;
+}
+
+.minigame-field {
+  margin: 10px 0;
+  min-height: 220px;
+  border: 1px dashed rgba(0, 255, 70, 0.3);
+  border-radius: 8px;
+  padding: 8px;
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 30, 0, 0.5);
+}
+
+.minigame-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.minigame-btn {
+  font: inherit;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  word-break: break-word;
+}
+
+.minigame-btn-dismiss {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #cfcfcf;
+}
+
+.minigame-btn-start {
+  background: rgba(0, 90, 0, 0.9);
+  border: 1px solid rgba(0, 255, 70, 0.7);
+  color: #d8ffd8;
+  font-weight: bold;
+}
+
+.minigame-btn-start:hover {
+  background: rgba(0, 130, 0, 0.9);
+}
+
+.minigame-note {
+  margin: 10px 0 0;
+  font-size: 0.7rem;
+  opacity: 0.55;
+  text-align: center;
+}
+
+/* ===== Игровые поля конкретных мини-игр ===== */
+
+/* Перехват пакетов / сортировка трафика */
+.mg-target {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 255, 70, 0.8);
+  background: rgba(0, 80, 0, 0.85);
+  color: #d8ffd8;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.mg-target-good {
+  border-color: rgba(0, 255, 70, 0.9);
+  background: rgba(0, 90, 0, 0.85);
+}
+
+.mg-target-bad {
+  border-color: rgba(255, 80, 80, 0.9);
+  background: rgba(110, 0, 0, 0.85);
+}
+
+.mg-hud {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 6px;
+}
+
+.mg-lane-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.mg-lane-btn {
+  flex: 1;
+  font: inherit;
+  font-size: 0.9rem;
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  background: rgba(0, 40, 0, 0.8);
+  border: 1px solid rgba(0, 255, 70, 0.5);
+  color: #d8ffd8;
+}
+
+.mg-result {
+  text-align: center;
+  padding: 18px 8px;
+}
+
+.mg-result h4 {
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+}
+
+.mg-result-win h4 { color: #7dff7d; }
+.mg-result-lose h4 { color: #ffb0b0; }
+
+.mg-result-rewards {
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+/* Взлом пароля */
+.mg-pass-input-row {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.mg-pass-input {
+  flex: 1;
+  font: inherit;
+  letter-spacing: 0.4em;
+  text-align: center;
+  background: rgba(0, 20, 0, 0.9);
+  border: 1px solid rgba(0, 255, 70, 0.5);
+  border-radius: 6px;
+  color: #d8ffd8;
+  padding: 8px;
+  min-width: 0;
+}
+
+.mg-pass-attempts {
+  list-style: none;
+  margin: 8px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mg-pass-attempt {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  border-bottom: 1px dotted rgba(0, 255, 70, 0.2);
+  padding-bottom: 2px;
+}
+
+.mg-hint-hot { color: #ff6b4a; }
+.mg-hint-warm { color: #ffd54f; }
+.mg-hint-cold { color: #6bc8ff; }
+
+@media (max-width: 380px) {
+  .minigame-modal { padding: 12px; }
+  .mg-target { width: 38px; height: 38px; }
+}

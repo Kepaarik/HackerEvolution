@@ -1,0 +1,240 @@
+.prestige-overlay {
+  position: fixed;
+  inset: 0;
+  /* Должно быть выше mobile-nav (z-index: 1000), иначе навбар перекрывает окно */
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.85);
+  /* Отступ снизу — на случай, если что-то всё же окажется под навбаром */
+  padding: 16px 16px calc(96px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prestige-modal {
+  width: 100%;
+  max-width: 480px;
+  margin: auto;
+  background: #0a0f0a;
+  border: 2px solid #ffd700;
+  border-radius: 12px;
+  padding: 20px;
+  color: #e0e0e0;
+  box-shadow: 0 0 40px rgba(255, 215, 0, 0.25);
+}
+
+.prestige-title {
+  margin: 0 0 12px;
+  color: #ffd700;
+  text-align: center;
+  letter-spacing: 2px;
+  font-size: 1.1rem;
+}
+
+.prestige-reward {
+  text-align: center;
+  font-size: 1.05rem;
+  margin-bottom: 12px;
+}
+
+.cores-amount {
+  color: #ffa500;
+  font-size: 1.3rem;
+}
+
+.prestige-progress {
+  margin-bottom: 12px;
+}
+
+.prestige-progress-bar {
+  height: 10px;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.prestige-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #b8860b, #ffd700);
+  transition: width 0.3s ease;
+}
+
+.prestige-progress-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-align: center;
+}
+
+.prestige-warning {
+  background: rgba(255, 82, 82, 0.1);
+  border: 1px solid rgba(255, 82, 82, 0.6);
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 0.8rem;
+  color: #ffb3b3;
+}
+
+.prestige-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.prestige-col h4,
+.prestige-unlocks h4 {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.prestige-col-keeps h4 {
+  color: #00ff41;
+}
+
+.prestige-col-resets h4 {
+  color: #ff5252;
+}
+
+.prestige-unlocks h4 {
+  color: #7c4dff;
+}
+
+.prestige-col ul,
+.prestige-unlocks ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.prestige-unlocks {
+  margin-bottom: 12px;
+}
+
+.prestige-shop-hint {
+  font-size: 0.75rem;
+  opacity: 0.75;
+  margin: 0 0 12px;
+}
+
+.prestige-confirm {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.8rem;
+  min-height: 44px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.prestige-confirm input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+  accent-color: #ffd700;
+  flex-shrink: 0;
+}
+
+.prestige-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* Переопределяем крупные стили .prestige-btn из App.css — внутри модалки
+   кнопка должна быть компактной и не выходить за пределы окна */
+.prestige-actions .prestige-btn {
+  flex: 1;
+  min-width: 0;
+  margin-top: 0;
+  padding: 12px 10px;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  word-break: break-word;
+  white-space: normal;
+  line-height: 1.3;
+}
+
+.prestige-actions .btn-secondary {
+  flex: 0 0 auto;
+  padding: 12px 18px;
+  min-height: 44px;
+  background: transparent;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+/* ТЗ 24.7: экран «разбирается» на пиксели + короткий глитч, без чрезмерного мигания */
+@keyframes prestige-disintegrate {
+  0% {
+    filter: none;
+    transform: scale(1);
+    opacity: 1;
+  }
+  30% {
+    filter: hue-rotate(40deg) contrast(1.6) blur(1px);
+    transform: scale(1.02) skewX(-2deg);
+  }
+  60% {
+    filter: invert(0.15) contrast(2) saturate(2);
+    transform: scale(0.98);
+    opacity: 0.85;
+  }
+  100% {
+    filter: brightness(3);
+    transform: scale(1.05);
+    opacity: 0;
+  }
+}
+
+.prestige-glitching .prestige-modal {
+  animation: prestige-disintegrate 1.5s steps(12, end) forwards;
+}
+
+.prestige-glitching {
+  animation: prestige-shake 0.3s steps(2, end) 4;
+}
+
+@keyframes prestige-shake {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(-3px, 2px);
+  }
+  50% {
+    transform: translate(3px, -2px);
+  }
+  75% {
+    transform: translate(-2px, -3px);
+  }
+}
+
+/* Узкие экраны: колонки в одну, кнопки не вылезают за модалку */
+@media (max-width: 480px) {
+  .prestige-modal {
+    padding: 16px;
+  }
+
+  .prestige-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .prestige-actions {
+    flex-wrap: wrap;
+  }
+
+  .prestige-actions .btn-secondary {
+    flex: 1;
+    padding: 12px 10px;
+  }
+}

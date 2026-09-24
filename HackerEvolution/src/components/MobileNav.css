@@ -1,0 +1,203 @@
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: rgba(0, 20, 0, 0.95);
+  border-top: 2px solid #0f0;
+  padding: 12px 0 15px 0; /* Увеличенный padding снизу */
+  z-index: 1000;
+  box-shadow: 0 -5px 20px rgba(0, 255, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #0a0;
+  font-size: 12px;
+  font-family: "Courier New", monospace;
+  cursor: pointer;
+  padding: 8px 4px;
+  transition: all 0.3s ease;
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* На узких экранах подписи короче, чтобы всё помещалось */
+@media (max-width: 420px) {
+  .nav-item {
+    font-size: 10px;
+    letter-spacing: 0;
+  }
+  .nav-icon {
+    font-size: 20px;
+  }
+}
+
+.nav-item:hover {
+  color: #fff;
+  text-shadow: 0 0 10px #0f0;
+  transform: translateY(-3px);
+}
+
+.nav-item.active {
+  color: #fff;
+  text-shadow:
+    0 0 15px #0f0,
+    0 0 30px #0f0;
+}
+
+.nav-item.active::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background: #0f0;
+  box-shadow: 0 0 10px #0f0;
+  border-radius: 0 0 3px 3px;
+}
+
+.nav-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  filter: drop-shadow(0 0 5px #0f0);
+}
+
+.nav-label {
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Затемнение фона при открытом всплывающем меню */
+.mobile-nav-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: -1;
+}
+
+/* Всплывающее меню с остальными вкладками */
+.mobile-nav-popup {
+  position: absolute;
+  bottom: 100%;
+  right: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 20, 0, 0.97);
+  border: 1px solid #0f0;
+  border-radius: 10px;
+  padding: 6px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.35);
+  backdrop-filter: blur(10px);
+  min-width: 160px;
+  animation: popup-slide-up 0.2s ease;
+}
+
+@keyframes popup-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.popup-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: none;
+  color: #0a0;
+  font-family: "Courier New", monospace;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.popup-item:hover {
+  color: #fff;
+  background: rgba(0, 255, 0, 0.12);
+  text-shadow: 0 0 10px #0f0;
+}
+
+.popup-item.active {
+  color: #fff;
+  background: rgba(0, 255, 0, 0.18);
+  text-shadow: 0 0 10px #0f0;
+}
+
+.popup-icon {
+  font-size: 18px;
+}
+
+/* Индикатор активной вкладки внутри меню "Ещё" */
+.nav-dot {
+  position: absolute;
+  top: 6px;
+  right: calc(50% - 18px);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0f0;
+  box-shadow: 0 0 8px #0f0;
+}
+
+.nav-badge {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  background: #f00;
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  min-width: 18px;
+  text-align: center;
+  box-shadow: 0 0 10px #f00;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* Адаптивность для больших экранов */
+@media (min-width: 768px) {
+  .mobile-nav {
+    max-width: 500px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 15px 15px 0 0;
+  }
+}

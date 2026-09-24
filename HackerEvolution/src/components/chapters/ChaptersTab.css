@@ -1,0 +1,99 @@
+.chapters-tab {
+  padding: 8px 4px 96px; /* снизу отступ под навбар */
+}
+
+.chapters-hint {
+  font-size: 0.85rem;
+  opacity: 0.85;
+  line-height: 1.45;
+  border-left: 3px solid var(--accent, #0f0);
+  padding-left: 10px;
+  margin-bottom: 14px;
+}
+
+.chapter-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.chapter-card {
+  border: 1px solid rgba(0, 255, 100, 0.25);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 20, 10, 0.55);
+}
+
+.chapter-card.locked {
+  opacity: 0.65;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.chapter-card.current {
+  border-color: var(--accent, #0f0);
+  box-shadow: 0 0 8px rgba(0, 255, 100, 0.25);
+}
+
+.chapter-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.chapter-num {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.chapter-name {
+  color: var(--accent, #0f0);
+  font-weight: 600;
+}
+
+.chapter-badge-cur {
+  font-size: 0.7rem;
+  border: 1px solid var(--accent, #0f0);
+  border-radius: 10px;
+  padding: 1px 8px;
+  margin-left: auto;
+}
+
+.chapter-desc {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  opacity: 0.9;
+}
+
+.chapter-final-note,
+.chapter-prestige-note {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+.unlock-chapter-btn {
+  margin-top: 6px;
+  width: 100%;
+  max-width: 320px;
+  padding: 8px 12px;
+  font-size: 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--accent, #0f0);
+  background: rgba(0, 255, 100, 0.12);
+  color: var(--accent, #0f0);
+  cursor: pointer;
+}
+
+.unlock-chapter-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: inherit;
+}

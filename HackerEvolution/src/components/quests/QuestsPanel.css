@@ -1,0 +1,117 @@
+/* Панель ежедневных квестов (Этап 5) */
+
+.quests-panel {
+  padding: 8px 4px;
+}
+
+.quests-title {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  color: var(--accent-color, #0f0);
+}
+
+.quests-hint {
+  margin: 0 0 12px;
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.quests-empty {
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+.quests-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quest-card {
+  background: rgba(0, 20, 0, 0.75);
+  border: 1px solid rgba(0, 255, 70, 0.25);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quest-card.quest-done {
+  border-color: rgba(0, 255, 70, 0.8);
+  box-shadow: 0 0 10px rgba(0, 255, 70, 0.25);
+}
+
+.quest-card.quest-claimed {
+  opacity: 0.55;
+}
+
+.quest-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.quest-desc {
+  font-size: 0.9rem;
+}
+
+.quest-progress-text {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  white-space: nowrap;
+}
+
+.quest-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: rgba(0, 255, 70, 0.12);
+  overflow: hidden;
+}
+
+.quest-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #0a5, #0f6);
+  transition: width 0.3s ease;
+}
+
+.quest-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.quest-reward {
+  font-size: 0.78rem;
+  color: #ffd54f;
+}
+
+.quest-claim-btn {
+  font: inherit;
+  font-size: 0.8rem;
+  padding: 4px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 255, 70, 0.6);
+  background: rgba(0, 60, 0, 0.8);
+  color: #bfffbf;
+  cursor: pointer;
+}
+
+.quest-claim-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.quest-claim-btn:not(:disabled):hover {
+  background: rgba(0, 110, 0, 0.9);
+}
+
+.quest-claimed-label {
+  font-size: 0.8rem;
+  color: #7fd87f;
+}
