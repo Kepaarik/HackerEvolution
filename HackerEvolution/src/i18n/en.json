@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "Hacker Evolution",
+    "loading": "Loading system..."
+  },
+  "resources": {
+    "compute": "Computations",
+    "data": "Data",
+    "cores": "Quantum Cores",
+    "fragments": "Source Code Fragments",
+    "perSecond": "/sec"
+  },
+  "tabs": {
+    "hack": "Hack",
+    "generators": "Generators",
+    "upgrades": "Upgrades",
+    "quests": "Quests",
+    "menu": "Menu"
+  },
+  "click": {
+    "button": "HACK",
+    "critical": "CRIT"
+  },
+  "generators": {
+    "title": "Generators",
+    "buy": "Buy",
+    "locked": "Locked",
+    "chapter": "Chapter",
+    "advanceTo": "Advance to Chapter"
+  },
+  "upgrades": {
+    "title": "Upgrades",
+    "hardware": "Hardware",
+    "software": "Software",
+    "hacking": "Manual Hacking",
+    "quantum": "Quantum Protocols",
+    "purchased": "Purchased",
+    "locked": "Locked"
+  },
+  "prestige": {
+    "title": "System Reboot",
+    "available": "Prestige available!",
+    "coresGain": "You will receive cores",
+    "keep": "Will be kept",
+    "reset": "Will be reset",
+    "confirm": "I understand: generators and computations will be reset",
+    "button": "Reboot System"
+  },
+  "offline": {
+    "title": "Welcome back!",
+    "awayFor": "You were away for",
+    "earned": "Earned offline",
+    "claim": "Claim",
+    "claimX2": "Claim ×2",
+    "watchAd": "Watch ad",
+    "note": "Base offline limit: 2 hours"
+  },
+  "quests": {
+    "title": "Quests",
+    "daily": "Daily Quests",
+    "weekly": "Weekly Quests",
+    "claim": "Claim",
+    "completed": "Completed",
+    "progress": "Progress"
+  },
+  "minigames": {
+    "available": "Minigame available!",
+    "play": "Play",
+    "dismiss": "Later",
+    "won": "Victory!",
+    "lost": "Failed"
+  },
+  "fragments": {
+    "title": "Source Code Fragments",
+    "progress": "Progress to Singularity",
+    "collected": "Collected",
+    "sources": "Fragment sources",
+    "singularity": "Singularity achieved!"
+  },
+  "settings": {
+    "title": "Settings",
+    "accessibility": "Accessibility",
+    "reduceEffects": "Reduce effects",
+    "disableShake": "Disable screen shake",
+    "highContrast": "High contrast",
+    "largeText": "Large text",
+    "sound": "Sound",
+    "vibration": "Vibration",
+    "language": "Language"
+  },
+  "singularity": {
+    "title": "SINGULARITY",
+    "story1": "You collected all Source Code Fragments.",
+    "story2": "The garage hacker became a global AI.",
+    "newGamePlus": "Transcendence (New Game+)",
+    "continue": "Continue current game"
+  }
+}

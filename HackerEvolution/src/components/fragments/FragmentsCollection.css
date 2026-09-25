@@ -1,0 +1,205 @@
+.fragments-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in;
+  padding: 20px;
+}
+
+.fragments-modal {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #7c4dff;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 600px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(124, 77, 255, 0.3);
+}
+
+.fragments-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.fragments-title {
+  margin: 0;
+  font-size: 20px;
+  color: #7c4dff;
+}
+
+.fragments-close {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.fragments-close:hover {
+  color: #fff;
+}
+
+/* Прогресс */
+.fragments-progress {
+  margin-bottom: 20px;
+}
+
+.fragments-progress-bar {
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.fragments-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #7c4dff, #00bfff);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.fragments-progress-label {
+  font-size: 14px;
+  color: #fff;
+  text-align: center;
+  display: block;
+}
+
+/* Сетка фрагментов */
+.fragments-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.fragment-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.fragment-cell.collected {
+  background: rgba(124, 77, 255, 0.2);
+  border: 1px solid rgba(124, 77, 255, 0.5);
+}
+
+.fragment-cell.empty {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #444;
+}
+
+/* Источники */
+.fragments-sources {
+  margin-bottom: 20px;
+}
+
+.fragments-sources h3 {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 8px;
+}
+
+.fragments-sources ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.fragments-sources li {
+  font-size: 13px;
+  color: #ccc;
+  padding: 4px 0;
+}
+
+/* Сингулярность */
+.singularity-banner {
+  text-align: center;
+  padding: 20px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1));
+  border: 2px solid gold;
+  border-radius: 12px;
+  animation: glow 2s infinite;
+}
+
+.singularity-banner h3 {
+  color: gold;
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.singularity-banner p {
+  color: #fff;
+  font-size: 14px;
+  margin: 0 0 16px;
+}
+
+.singularity-btn {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, gold, #ffa500);
+  color: #000;
+  font-weight: bold;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 44px;
+}
+
+.singularity-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+}
+
+.fragments-hint {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  padding: 12px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+  }
+}
+
+@media (max-width: 374px) {
+  .fragments-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  .fragments-modal {
+    padding: 16px;
+  }
+}
