@@ -666,7 +666,7 @@
     left: 10px;
     max-width: none;
   }
-  
+
   .achievement-notification {
     padding: 14px 18px;
     font-size: 0.9rem;
@@ -683,7 +683,7 @@
   user-select: none;
   z-index: 100;
   color: #00ff41;
-  text-shadow: 
+  text-shadow:
     0 0 10px rgba(0, 255, 65, 0.8),
     0 0 20px rgba(0, 255, 65, 0.6),
     0 0 30px rgba(0, 255, 65, 0.4);
@@ -845,8 +845,13 @@
 }
 
 @keyframes pulseDanger {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .firewall-instruction {
@@ -900,9 +905,18 @@
 }
 
 @keyframes shakeError {
-  0%, 100% { transform: translateX(0); }
-  20%, 60% { transform: translateX(-8px); }
-  40%, 80% { transform: translateX(8px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20%,
+  60% {
+    transform: translateX(-8px);
+  }
+  40%,
+  80% {
+    transform: translateX(8px);
+  }
 }
 
 .grid-cell:disabled {
@@ -943,30 +957,30 @@
   .firewall-modal {
     padding: 18px;
   }
-  
+
   .modal-header h2 {
     font-size: 1.3rem;
   }
-  
+
   .firewall-info {
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     padding: 12px;
   }
-  
+
   .info-row span:last-child {
     font-size: 1.1rem;
   }
-  
+
   .grid-cell {
     font-size: 1.3rem;
     border-radius: 8px;
   }
-  
+
   .modal-overlay {
     padding: 12px;
   }
-  
+
   .firewall-grid {
     gap: 8px;
   }
@@ -1079,4 +1093,40 @@
   display: block;
   color: #aaa;
   font-size: 0.85em;
+}
+
+/* === ФИКС ДЛЯ НИЖНЕГО НАВБАРА === */
+
+/* 1. Добавляем отступ снизу к основному игровому полю */
+.game-area {
+  /* Высота навбара (обычно 60-70px) + безопасная зона для iPhone */
+  padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+
+  /* Убеждаемся, что область скроллится корректно */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 2. Если навбар фиксированный, убеждаемся, что он поверх контента */
+.mobile-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  /* Фон навбара, чтобы контент не просвечивал сквозь него */
+  background: rgba(10, 10, 18, 0.95);
+  backdrop-filter: blur(10px);
+
+  /* Отступ для "челки" снизу на айфонах */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+/* 3. Дополнительный отступ для списков внутри табов */
+.tab-content,
+.quest-list,
+.generator-list {
+  padding-bottom: 20px;
 }

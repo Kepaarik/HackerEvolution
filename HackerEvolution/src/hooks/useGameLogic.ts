@@ -158,20 +158,31 @@ const applyOfflineProgress = (saved: GameState): GameState => {
     clampElapsed(saved.lastSaveTime || now, OFFLINE_CAP_SECONDS),
     OFFLINE_CAP_SECONDS,
   )
-  if (elapsed < OFFLINE_MIN_SECONDS) return { ...saved, lastSaveTime: now }
 
-  // Крит и ручные клики в оффлайне не участвуют (ТЗ 13.3) — только пассивный доход
-  const earned = getCps(saved) * elapsed
-  if (earned <= 0) return { ...saved, lastSaveTime: now }
-
-  return {
-    ...saved,
-    money: saved.money + earned,
-    totalEarned: saved.totalEarned + earned,
-    // Этап 4: оффлайн-доход тоже идёт в прогресс текущего забега (ТЗ 24.4)
-    totalEarnedThisRun: saved.totalEarnedThisRun + earned,
-    lastSaveTime: now,
+  if (elapsed < OFFLINE_MIN_SECONDS) {
+    return { ...saved, lastSaveTime: now }
   }
+
+  const earned = getCps(saved) * elapsed
+  if (earned <= 0) {
+    return { ...saved, lastSaveTime: now }
+  }
+
+  // СОХРАНЯЕМ ДЛЯ МОДАЛКИ (не начисляем сразу в state!)
+  try {
+    sessionStorage.setItem(
+      'pending_offline_reward',
+      JSON.stringify({
+        earnings: earned,
+        time: elapsed,
+      }),
+    )
+  } catch (e) {
+    console.error('Failed to save pending offline reward', e)
+  }
+
+  // Возвращаем состояние БЕЗ начисления офлайн-дохода (начислит модалка при клике)
+  return { ...saved, lastSaveTime: now }
 }
 
 export const useGameState = () => {
@@ -356,7 +367,15 @@ export const useAchievements = (
         })
       }
     }
-  }, [state.totalEarned, state.clickCount, state.money, state.achievements, state.generators, state.fragments, setState])
+  }, [
+    state.totalEarned,
+    state.clickCount,
+    state.money,
+    state.achievements,
+    state.generators,
+    state.fragments,
+    setState,
+  ])
 }
 
 /**
@@ -712,7 +731,10 @@ export const usePassiveData = (
       setState((prev) => {
         const next = tickPassiveData(prev, 1)
         if (next !== prev && getPassiveDataRatePerHour(prev) >= 3600) {
-          eventBus.emit(EVENTS.DATA_CHANGED, { value: next.data, delta: next.data - prev.data })
+          eventBus.emit(EVENTS.DATA_CHANGED, {
+            value: next.data,
+            delta: next.data - prev.data,
+          })
         }
         return next
       })

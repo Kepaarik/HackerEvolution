@@ -1,12 +1,13 @@
-import { useState } from "react";
-import { Header } from "./components/header/Header";
-import { HackButton } from "./components/gameArea/HackButton";
-import { TabContent } from "./components/gameArea/TabContent";
-import MobileNav, { type TabType } from "./components/MobileNav";
-import MatrixBackground from "./components/MatrixBackground";
-import { MoneyDisplay } from "./components/common/MoneyDisplay";
-import { PrestigeScreen } from "./components/prestige/PrestigeScreen";
-import { MinigameLauncher } from "./components/minigames/MinigameLauncher";
+import { useState, useEffect } from 'react'
+import { Header } from './components/header/Header'
+import { HackButton } from './components/gameArea/HackButton'
+import { TabContent } from './components/gameArea/TabContent'
+import MobileNav, { type TabType } from './components/MobileNav'
+import MatrixBackground from './components/MatrixBackground'
+import { MoneyDisplay } from './components/common/MoneyDisplay'
+import { PrestigeScreen } from './components/prestige/PrestigeScreen'
+import { MinigameLauncher } from './components/minigames/MinigameLauncher'
+import { OfflineRewardModal } from './components/OfflineRewardModal'
 import {
   useGameState,
   useIncome,
@@ -24,48 +25,75 @@ import {
   useTechnologies,
   useStageNavigation,
   useStageFragmentMilestones,
-} from "./hooks/useGameLogic";
-import { formatNumber } from "./utils/NumberFormatter";
-import "./App.css";
+} from './hooks/useGameLogic'
+import { formatNumber } from './utils/NumberFormatter'
+import './App.css'
 
 function App() {
-  const { state, setState } = useGameState();
-  const { getIncomePerSecond, getClickPower } = useIncome(state);
+  const { state, setState } = useGameState()
+  const { getIncomePerSecond, getClickPower } = useIncome(state)
   const { clickEffects, handleHack, removeEffect } = useClickHandler(
     setState,
     getClickPower,
-  );
-  const [activeTab, setActiveTab] = useState<TabType>("hack");
+  )
+  const [activeTab, setActiveTab] = useState<TabType>('hack')
+  const [offlineReward, setOfflineReward] = useState<{
+    earnings: number
+    time: number
+  } | null>(null)
 
-  useAutoIncome(setState, getIncomePerSecond);
-  useAchievements(state, setState);
-  const chapters = useChapterProgression(state, setState);
-  const { buyGenerator, getCost } = useGeneratorPurchase(state, setState);
-  const { buyUpgrade } = useUpgradePurchase(state, setState);
-  // Этап 4: престиж-система (ТЗ разделы 24, 18)
-  const prestige = usePrestige(state, setState);
-  const { buyPrestigeUpgrade } = usePrestigeUpgrades(state, setState);
-  // Этап 5: ежедневные квесты и мини-игры (ТЗ 19–23, 27.1)
-  const { claimQuest } = useQuests(state, setState);
-  const minigames = useMinigames(state, setState);
-  // Этап 6: главы 2–4 (ТЗ 8–10) — пассивные Данные, Технологии, навигация по этапам
-  usePassiveData(setState);
-  useStageFragmentMilestones(state, setState);
-  const { buyTechnology } = useTechnologies(state, setState);
-  const { setViewChapter } = useStageNavigation(setState);
+  useAutoIncome(setState, getIncomePerSecond)
+  useAchievements(state, setState)
+  const chapters = useChapterProgression(state, setState)
+  const { buyGenerator, getCost } = useGeneratorPurchase(state, setState)
+  const { buyUpgrade } = useUpgradePurchase(state, setState)
+  const prestige = usePrestige(state, setState)
+  const { buyPrestigeUpgrade } = usePrestigeUpgrades(state, setState)
+  const { claimQuest } = useQuests(state, setState)
+  const minigames = useMinigames(state, setState)
+  usePassiveData(setState)
+  useStageFragmentMilestones(state, setState)
+  const { buyTechnology } = useTechnologies(state, setState)
+  const { setViewChapter } = useStageNavigation(setState)
 
-  const incomePerSec = getIncomePerSecond();
+  const incomePerSec = getIncomePerSecond()
+
+  // Эффект для проверки офлайн-награды при загрузке
+  useEffect(() => {
+    const pending = sessionStorage.getItem('pending_offline_reward')
+    if (pending) {
+      try {
+        const data = JSON.parse(pending)
+        if (data.earnings > 0) setOfflineReward(data)
+        sessionStorage.removeItem('pending_offline_reward')
+      } catch (e) {
+        console.error('Failed to parse offline reward', e)
+      }
+    }
+  }, [])
+
+  const handleClaimOffline = (multiplier: 1 | 2) => {
+    if (!offlineReward) return
+    const finalEarnings = offlineReward.earnings * multiplier
+
+    setState((prev) => ({
+      ...prev,
+      money: prev.money + finalEarnings,
+      totalEarned: prev.totalEarned + finalEarnings,
+      totalEarnedThisRun: prev.totalEarnedThisRun + finalEarnings,
+    }))
+
+    setOfflineReward(null)
+  }
 
   return (
-    <div
-      className={`app-container ${prestige.isAnimating ? "animate-glitch" : ""}`}
-    >
+    <div className={`app-container ${prestige.isAnimating ? 'animate-glitch' : ''}`}>
       <MatrixBackground stage={state.viewChapter ?? state.currentChapter} />
       <Header
         money={state.money}
         incomePerSecond={incomePerSec}
         currentChapter={state.currentChapter}
-        showStats={activeTab === "hack"}
+        showStats={activeTab === 'hack'}
         data={state.data}
         quantumCores={state.quantumCores}
         prestigeCount={state.prestigeCount}
@@ -73,12 +101,14 @@ function App() {
       />
 
       <main className="game-area">
-        {activeTab === "hack" && (
+        {activeTab === 'hack' && (
           <>
             <div className="stats-section">
               <div className="stats-bar-inline">
                 <MoneyDisplay amount={state.money} />
-                <span className="income-display glow-text">+{formatNumber(incomePerSec, 'money')}/сек</span>
+                <span className="income-display glow-text">
+                  +{formatNumber(incomePerSec, 'money')}/сек
+                </span>
                 {state.data > 0 && (
                   <span className="data-display" title="Данные">
                     📊 {Math.floor(state.data)}
@@ -101,7 +131,6 @@ function App() {
               clickEffects={clickEffects}
               removeEffect={removeEffect}
             />
-            {/* Этап 5: индикатор доступной мини-игры (ТЗ 23.1) */}
             <MinigameLauncher
               available={minigames.available && state.currentChapter >= 1}
               activeId={minigames.active?.id ?? null}
@@ -130,7 +159,6 @@ function App() {
         />
       </main>
 
-      {/* Экран престижа с предпросмотром наград и подтверждением (ТЗ 24.6) */}
       {prestige.screenOpen && (
         <PrestigeScreen
           state={state}
@@ -142,13 +170,23 @@ function App() {
         />
       )}
 
+      {/* Экран офлайн-награды */}
+      {offlineReward && (
+        <OfflineRewardModal
+          offlineEarnings={offlineReward.earnings}
+          offlineTime={offlineReward.time}
+          onClaim={handleClaimOffline}
+          onClose={() => setOfflineReward(null)}
+        />
+      )}
+
       <MobileNav
         activeTab={activeTab}
         onTabChange={setActiveTab}
         generatorsOwned={state.generatorsOwned}
       />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

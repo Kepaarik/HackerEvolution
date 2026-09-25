@@ -1,0 +1,132 @@
+.offline-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.offline-modal {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid var(--color-compute, #00ff41);
+  border-radius: 16px;
+  padding: 32px 24px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 0 40px rgba(0, 255, 65, 0.3);
+  animation: slideUp 0.4s ease-out;
+  color: #fff;
+  font-family: sans-serif;
+}
+
+.offline-title {
+  text-align: center;
+  font-size: 24px;
+  margin-bottom: 24px;
+  color: var(--color-compute, #00ff41);
+  text-shadow: 0 0 10px var(--color-compute, #00ff41);
+}
+.offline-time {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+.offline-reward {
+  text-align: center;
+  font-size: 20px;
+  margin-bottom: 24px;
+}
+.earnings-amount {
+  color: var(--color-compute, #00ff41);
+  font-size: 24px;
+  text-shadow: 0 0 8px var(--color-compute, #00ff41);
+}
+.offline-info {
+  margin-bottom: 24px;
+  text-align: center;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.offline-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.offline-actions button {
+  flex: 1;
+  min-height: 56px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background: var(--color-compute, #00ff41);
+  color: #000;
+}
+.btn-primary:hover {
+  background: #00cc33;
+  transform: scale(1.02);
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--color-compute, #00ff41);
+  border: 2px solid var(--color-compute, #00ff41) !important;
+}
+.btn-secondary:hover {
+  background: rgba(0, 255, 65, 0.1);
+  transform: scale(1.02);
+}
+
+.offline-btn-x2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.btn-hint {
+  font-size: 11px;
+  opacity: 0.7;
+  font-weight: normal;
+}
+.offline-note {
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 374px) {
+  .offline-modal {
+    padding: 24px 16px;
+  }
+  .offline-actions {
+    flex-direction: column;
+  }
+}
