@@ -109,3 +109,21 @@ export const STAGE_PROGRESS_MILESTONES: { count: number; fragments: number }[] =
 ]
 
 /** Остальные соотношения валют и ресурсов (Фрагменты) будут добавлены на Этапе 7. */
+export const SAVE_KEY = 'he_save'
+
+export const EVENTS = {
+  COMPUTE_CHANGED: 'computeChanged',
+  DATA_CHANGED: 'dataChanged',
+  CORES_CHANGED: 'coresChanged',
+  CPS_CHANGED: 'cpsChanged',
+  GENERATOR_BOUGHT: 'generatorBought',
+  UPGRADE_BOUGHT: 'upgradeBought',
+  PRESTIGE_COMPLETED: 'prestigeCompleted',
+  MINIGAME_STARTED: 'minigameStarted',
+  MINIGAME_COMPLETED: 'minigameCompleted',
+  QUEST_COMPLETED: 'questCompleted',
+  ACHIEVEMENT_UNLOCKED: 'achievementUnlocked',
+  OFFLINE_REWARD: 'offlineReward',
+  SETTINGS_CHANGED: 'settingsChanged',
+  SAVE_COMPLETED: 'saveCompleted',
+}
