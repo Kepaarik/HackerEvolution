@@ -1,57 +1,34 @@
-import React, { useState } from 'react';
-import { GameState } from '../../types';
-import { GENERATORS, UPGRADES, ACHIEVEMENTS, ALL_STAGE_NAMES, MAX_STAGE } from '../../gameData';
-import { GeneratorItem } from '../generators/GeneratorsList';
-import { UpgradeItem, BRANCH_ORDER, BRANCH_LABELS } from '../upgrades/UpgradesList';
-import { AchievementItem } from '../achievements/AchievementsList';
-import { PrestigeUpgradesList } from '../prestige/PrestigeUpgradesList';
-import { ChaptersTab } from '../chapters/ChaptersTab';
-import { QuestsPanel } from '../quests/QuestsPanel';
-import { TechnologiesTab } from '../technologies/TechnologiesTab';
-import { formatNumber } from '../../utils/NumberFormatter';
-import type { BuyAmount } from '../../hooks/useGameLogic';
+import { GameState } from '../../types'
 import {
-  getGeneratorIncome,
-  isGeneratorVisible,
-  isUpgradeAvailable,
-  isUpgradeVisible,
-  getMaxStage,
-} from '../../economy/EconomyService';
-import { hasTechnology } from '../../economy/TechnologyService';
-import { SPACE_STAGES } from '../../gameData';
-import '../technologies/TechnologiesTab.css';
-
-/** Открыт ли космический этап навсегда (через свою технологию) — для подсказок в UI. */
-function isStageTechBought(state: GameState, chapter: number): boolean {
-  const stage = SPACE_STAGES.find((s) => s.chapter === chapter);
-  return !!stage && hasTechnology(state, stage.technologyId);
-}
+  GENERATORS,
+  UPGRADES,
+  PRESTIGE_UPGRADES,
+  CHAPTER_NAMES,
+  SPACE_STAGES,
+} from '../../gameData'
+import { GeneratorList } from '../generators/GeneratorList'
+import { formatNumber } from '../../utils/NumberFormatter'
+import type { TabType } from '../MobileNav'
+import './TabContent.css'
 
 interface TabContentProps {
-  activeTab: string;
-  state: GameState;
-  buyGenerator: (genId: string, amount?: BuyAmount) => void;
-  buyUpgrade: (upgradeId: string) => void;
-  /** Стоимость покупки `amount` штук генератора. */
-  getGenCost: (genId: string, amount: BuyAmount) => { count: number; cost: number };
-  /** Покупка престиж-апгрейда «Квантовые протоколы» за ядра (Этап 4). */
-  buyPrestigeUpgrade: (upgradeId: string) => void;
-  /** Тизер/кнопка престижа на вкладке улучшений (Этап 4, ТЗ 24.5–24.6). */
-  prestigeTeaserVisible: boolean;
-  prestigeAvailable: boolean;
-  prestigeCoresToGain: number;
-  onOpenPrestige: () => void;
-  /** Ручной переход в следующую главу (вкладка «Главы»). */
-  onAdvanceChapter: () => void;
-  /** Забрать награду выполненного ежедневного квеста (Этап 5, ТЗ 27.1). */
-  claimQuest: (questId: string) => void;
-  /** Покупка технологии за Данные/Фрагменты (Этап 6, ТЗ 8–10). */
-  buyTechnology: (techId: string) => void;
-  /** Переключение просмотренного этапа на вкладке «Генераторы» (Этап 6). */
-  setViewChapter: (chapter: number) => void;
+  activeTab: TabType
+  state: GameState
+  buyGenerator: (genId: string, amount?: number) => void
+  buyUpgrade: (upgradeId: string) => void
+  getGenCost: (genId: string, amount?: number) => number
+  buyPrestigeUpgrade: (upgradeId: string) => void
+  prestigeTeaserVisible: boolean
+  prestigeAvailable: boolean
+  prestigeCoresToGain: number
+  onOpenPrestige: () => void
+  onAdvanceChapter: () => void
+  claimQuest: (questId: string) => void
+  buyTechnology: (techId: string) => void
+  setViewChapter: (chapter: number) => void
 }
 
-export const TabContent: React.FC<TabContentProps> = ({
+export function TabContent({
   activeTab,
   state,
   buyGenerator,
@@ -66,189 +43,287 @@ export const TabContent: React.FC<TabContentProps> = ({
   claimQuest,
   buyTechnology,
   setViewChapter,
-}) => {
-  // Общий выбранный объём покупки для всех генераторов (1/10/25/MAX)
-  const [buyAmount, setBuyAmount] = useState<BuyAmount>(1);
+}: TabContentProps) {
+  // === Вкладка: ГЕНЕРАТОРЫ (МАГАЗИН) ===
+  if (activeTab === 'generators' || activeTab === 'shop') {
+    return (
+      <div className="tab-content">
+        <div className="tab-header">
+          <h2 className="tab-title">🛒 Генераторы</h2>
+          <div className="tab-resources">
+            <span className="resource-money">
+              💻 {formatNumber(state.money, 'money')}
+            </span>
+            {state.data > 0 && (
+              <span className="resource-data">📊 {Math.floor(state.data)}</span>
+            )}
+            {state.quantumCores > 0 && (
+              <span className="resource-cores">⚛ {state.quantumCores}</span>
+            )}
+          </div>
+        </div>
 
-  if (activeTab === 'hack') {
-    return null;
+        {/* Переключатель глав (если открыто несколько) */}
+        <div className="chapter-tabs">
+          {[1, 2, 3, 4].map((ch) => {
+            const isUnlocked = ch <= state.currentChapter
+            const isViewing = (state.viewChapter ?? 1) === ch
+            return (
+              <button
+                key={ch}
+                className={`chapter-tab ${isViewing ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`}
+                onClick={() => isUnlocked && setViewChapter(ch)}
+                disabled={!isUnlocked}
+              >
+                {CHAPTER_NAMES[ch - 1] || `Глава ${ch}`}
+                {!isUnlocked && ' 🔒'}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Список генераторов текущей просматриваемой главы */}
+        <GeneratorList
+          state={state}
+          buyGenerator={buyGenerator}
+          getGenCost={getGenCost}
+        />
+
+        {/* Кнопка перехода к следующей главе */}
+        {state.currentChapter < 4 && (
+          <button className="advance-chapter-btn" onClick={onAdvanceChapter}>
+            Перейти к Главе {state.currentChapter + 1}:{' '}
+            {CHAPTER_NAMES[state.currentChapter]}
+          </button>
+        )}
+      </div>
+    )
   }
 
-  return (
-    <div className="tab-content">
-      {activeTab === 'generators' && (
-        <div className="list-container">
-          {/* Навигация по этапам (Этап 6): сюжетные 1–4 + навсегда открытые космические 5–7 */}
-          {MAX_STAGE > 1 && (
-            <div className="stage-nav" role="group" aria-label="Этапы">
-              {Array.from({ length: MAX_STAGE }, (_, i) => i + 1).map((ch) => {
-                const spaceStage = ch >= 5;
-                const unlocked = spaceStage
-                  ? (state.chaptersUnlockedForever ?? []).includes(ch)
-                  : ch <= (state.currentChapter ?? 1);
-                const isActive = (state.viewChapter ?? 1) === ch;
-                return (
+  // === Вкладка: УЛУЧШЕНИЯ ===
+  if (activeTab === 'upgrades') {
+    const purchasedUpgrades = state.upgrades || []
+    const purchasedPrestigeUpgrades = state.prestigeUpgrades || {}
+
+    return (
+      <div className="tab-content">
+        <div className="tab-header">
+          <h2 className="tab-title">⚡ Улучшения</h2>
+          <div className="tab-resources">
+            <span className="resource-money">
+              💻 {formatNumber(state.money, 'money')}
+            </span>
+            {state.data > 0 && (
+              <span className="resource-data">📊 {Math.floor(state.data)}</span>
+            )}
+            {state.quantumCores > 0 && (
+              <span className="resource-cores">⚛ {state.quantumCores}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Обычные апгрейды (Железо, Софт, Ручной взлом) */}
+        <section className="upgrade-section">
+          <h3 className="section-title">Обычные улучшения</h3>
+          <div className="upgrade-list">
+            {UPGRADES.filter((u) => !purchasedUpgrades.includes(u.id)).map((upgrade) => {
+              const canAfford =
+                upgrade.dataCost !== undefined
+                  ? (state.data ?? 0) >= upgrade.dataCost
+                  : state.money >= upgrade.cost
+
+              return (
+                <div key={upgrade.id} className="upgrade-item">
+                  <div className="upgrade-info">
+                    <span className="upgrade-name">{upgrade.name}</span>
+                    <span className="upgrade-desc">{upgrade.description}</span>
+                  </div>
                   <button
-                    key={ch}
-                    className={`stage-btn ${isActive ? 'active' : ''} ${unlocked ? '' : 'locked'}`}
-                    disabled={!unlocked}
-                    onClick={() => setViewChapter(ch)}
-                    title={unlocked ? ALL_STAGE_NAMES[ch] : '🔒 Этап ещё не открыт'}
+                    className={`upgrade-buy-btn ${canAfford ? 'affordable' : 'not-affordable'}`}
+                    onClick={() => buyUpgrade(upgrade.id)}
+                    disabled={!canAfford}
                   >
-                    {unlocked ? ALL_STAGE_NAMES[ch] : `🔒 Этап ${ch}`}
+                    {upgrade.dataCost !== undefined
+                      ? `📊 ${upgrade.dataCost}`
+                      : `💻 ${formatNumber(upgrade.cost, 'money')}`}
                   </button>
-                );
+                </div>
+              )
+            })}
+          </div>
+          {UPGRADES.every((u) => purchasedUpgrades.includes(u.id)) && (
+            <p className="all-bought-msg">✅ Все обычные улучшения куплены!</p>
+          )}
+        </section>
+
+        {/* Престиж-апгрейды (Квантовые протоколы) */}
+        <section className="upgrade-section prestige-section">
+          <h3 className="section-title">🔮 Квантовые протоколы</h3>
+          {state.prestigeCount === 0 && (
+            <p className="prestige-hint">
+              Совершите первый престиж, чтобы открыть квантовые улучшения.
+            </p>
+          )}
+          {state.prestigeCount > 0 && (
+            <div className="upgrade-list">
+              {PRESTIGE_UPGRADES.map((pUpgrade) => {
+                const currentLevel = purchasedPrestigeUpgrades[pUpgrade.id] || 0
+                const maxLevel = pUpgrade.maxLevel || 1
+                const isMaxed = currentLevel >= maxLevel
+                const canAfford = state.quantumCores >= pUpgrade.cost && !isMaxed
+
+                return (
+                  <div key={pUpgrade.id} className="upgrade-item prestige-upgrade">
+                    <div className="upgrade-info">
+                      <span className="upgrade-name">
+                        {pUpgrade.name}
+                        {maxLevel > 1 && ` (${currentLevel}/${maxLevel})`}
+                      </span>
+                      <span className="upgrade-desc">{pUpgrade.description}</span>
+                    </div>
+                    <button
+                      className={`upgrade-buy-btn ${canAfford ? 'affordable' : 'not-affordable'}`}
+                      onClick={() => buyPrestigeUpgrade(pUpgrade.id)}
+                      disabled={!canAfford}
+                    >
+                      {isMaxed ? 'MAX' : `⚛ ${pUpgrade.cost}`}
+                    </button>
+                  </div>
+                )
               })}
             </div>
           )}
-          {GENERATORS.filter((gen) => {
-            const view = state.viewChapter ?? 1;
-            // На выбранном этапе показываем его генераторы; если этап недоступен — все
-            return gen.chapter === view || getMaxStage(state) < 1;
-          }).map((gen) => {
-            const visible = isGeneratorVisible(gen.id, state);
-            const count = state.generators[gen.id] || 0;
-            const income = getGeneratorIncome(gen.id, state);
-            const { count: buyCount, cost } = getGenCost(gen.id, buyAmount);
-            const canAfford = buyAmount === 'MAX' ? buyCount > 0 : state.money >= cost;
+        </section>
 
-            let lockedHint: string | null = null;
-            if (!visible) {
-              if (gen.chapter >= 5) {
-                const techRequired = !isStageTechBought(state, gen.chapter);
-                lockedHint = techRequired
-                  ? `Изучите технологию этапа «${ALL_STAGE_NAMES[gen.chapter]}» во вкладке «Технологии»`
-                  : `Нужно 10 шт. предыдущего генератора этапа`;
-              } else if (gen.chapter > state.currentChapter) {
-                lockedHint = `Откроется в главе ${gen.chapter}`;
-              } else {
-                lockedHint = `Заработайте $${formatNumber(gen.unlockAtTotalEarned, 'compact')} всего`;
-              }
-            }
-
-            return (
-              <GeneratorItem
-                key={gen.id}
-                data={gen}
-                count={count}
-                incomePerSecond={income}
-                cost={cost}
-                buyCount={buyCount}
-                canAfford={canAfford}
-                onBuy={(amount) => buyGenerator(gen.id, amount)}
-                selectedAmount={buyAmount}
-                onAmountChange={setBuyAmount}
-                lockedHint={lockedHint}
-              />
-            );
-          })}
-        </div>
-      )}
-
-      {activeTab === 'upgrades' && (
-        <div className="list-container">
-          {BRANCH_ORDER.map((branch) => {
-            const items = UPGRADES.filter(
-              (u) => u.branch === branch && !state.upgrades.includes(u.id) && isUpgradeVisible(u.id, state),
-            );
-            if (items.length === 0) return null;
-            return (
-              <div key={branch} className="upgrade-branch">
-                <h4 className="branch-title">{BRANCH_LABELS[branch]}</h4>
-                {items.map((upgrade) => {
-                  const requirementMet = upgrade.requirement
-                    ? (state.generators[upgrade.requirement.generatorId] || 0) >= upgrade.requirement.count
-                    : true;
-                  // Цена в Данных 📊 (Этап 6, ТЗ 8) или в деньгах
-                  const canAfford = upgrade.dataCost !== undefined
-                    ? (state.data ?? 0) >= upgrade.dataCost
-                    : state.money >= upgrade.cost;
-                  return (
-                    <UpgradeItem
-                      key={upgrade.id}
-                      upgrade={upgrade}
-                      canAfford={canAfford}
-                      requirementMet={requirementMet}
-                      onBuy={() => buyUpgrade(upgrade.id)}
-                    />
-                  );
-                })}
-              </div>
-            );
-          })}
-          {UPGRADES.every((u) => state.upgrades.includes(u.id)) && (
-            <p>Все апгрейды куплены!</p>
-          )}
-
-          {/* Ветка «Квантовые протоколы» — престиж-апгрейды за ядра (Этап 4, ТЗ 18).
-              Показывается всегда: игрок видит цель престижа заранее. */}
-          <PrestigeUpgradesList state={state} buyPrestigeUpgrade={buyPrestigeUpgrade} />
-
-          {/* Тизер престижа: кнопка появляется заранее, но с предупреждением (ТЗ 24.5) */}
-          {prestigeTeaserVisible && (
-            <div className="prestige-section">
+        {/* Тизер престижа */}
+        {prestigeTeaserVisible && (
+          <section className="prestige-teaser">
+            <div className="prestige-teaser-content">
               <h3>⚛ Перезагрузка системы</h3>
-              {prestigeAvailable ? (
-                <>
-                  <p>
-                    Готово к перезагрузке: вы получите{' '}
-                    <strong>{prestigeCoresToGain}</strong>{' '}
-                    {prestigeCoresToGain === 1 ? 'квантовое ядро' : 'квантовых ядер'}
-                  </p>
-                  <button className="prestige-btn" onClick={onOpenPrestige}>
-                    ПЕРЕЗАГРУЗИТЬ СИСТЕМУ
-                  </button>
-                </>
-              ) : (
-                <>
-                  <p className="prestige-requirement">
-                    Ещё немного! Престиж откроется при 1M вычислений за забег
-                    (сейчас: {formatNumber(state.totalEarnedThisRun, 'compact')} / 1M)
-                  </p>
+              <p>
+                {prestigeAvailable
+                  ? `Вы можете получить ${prestigeCoresToGain} квантовых ядер!`
+                  : 'Наберите 1 000 000 вычислений за забег для престижа.'}
+              </p>
+              <button
+                className="prestige-open-btn"
+                onClick={onOpenPrestige}
+                disabled={!prestigeAvailable}
+              >
+                {prestigeAvailable ? 'Открыть экран престижа' : 'Ещё рано...'}
+              </button>
+            </div>
+          </section>
+        )}
+      </div>
+    )
+  }
+
+  // === Вкладка: ЗАДАНИЯ ===
+  if (activeTab === 'quests') {
+    const quests = state.quests || []
+
+    return (
+      <div className="tab-content">
+        <div className="tab-header">
+          <h2 className="tab-title">🎯 Задания</h2>
+          <div className="tab-resources">
+            {state.data > 0 && (
+              <span className="resource-data">📊 {Math.floor(state.data)}</span>
+            )}
+            {(state.fragments ?? 0) > 0 && (
+              <span className="resource-fragments">🧩 {state.fragments}</span>
+            )}
+          </div>
+        </div>
+
+        {/* Ежедневные квесты */}
+        <section className="quest-section">
+          <h3 className="section-title">Ежедневные задания</h3>
+          {quests.length === 0 ? (
+            <p className="no-quests-msg">Квесты обновятся завтра. Возвращайтесь!</p>
+          ) : (
+            <div className="quest-list">
+              {quests.map((quest) => (
+                <div
+                  key={quest.id}
+                  className={`quest-item ${quest.completed ? 'completed' : ''}`}
+                >
+                  <div className="quest-info">
+                    <span className="quest-name">{quest.name}</span>
+                    <span className="quest-progress">
+                      {quest.current}/{quest.target}
+                    </span>
+                    <span className="quest-reward">
+                      Награда: {quest.rewardData > 0 && `📊 ${quest.rewardData}`}{' '}
+                      {quest.rewardMoney > 0 &&
+                        `💻 ${formatNumber(quest.rewardMoney, 'money')}`}
+                    </span>
+                  </div>
                   <button
-                    className="prestige-btn prestige-btn-preview"
-                    onClick={onOpenPrestige}
+                    className={`quest-claim-btn ${quest.completed && !quest.claimed ? 'claimable' : ''}`}
+                    onClick={() => claimQuest(quest.id)}
+                    disabled={!quest.completed || quest.claimed}
                   >
-                    ПРЕДПРОСМОТР ПЕРЕЗАГРУЗКИ
+                    {quest.claimed
+                      ? '✅'
+                      : quest.completed
+                        ? 'Забрать'
+                        : `${Math.floor((quest.current / quest.target) * 100)}%`}
                   </button>
-                </>
-              )}
+                </div>
+              ))}
             </div>
           )}
-        </div>
-      )}
+        </section>
 
-      {activeTab === 'technologies' && (
-        <TechnologiesTab state={state} buyTechnology={buyTechnology} />
-      )}
+        {/* Технологии */}
+        <section className="quest-section">
+          <h3 className="section-title">🔬 Технологии</h3>
+          <div className="tech-list">
+            {SPACE_STAGES.map((tech) => {
+              const isOwned = (state.technologies || []).includes(tech.id)
+              const canAfford = (state.data ?? 0) >= tech.dataCost
 
-      {activeTab === 'chapters' && (
-        <>
-          <ChaptersTab
-            currentChapter={state.currentChapter}
-            totalEarnedThisRun={state.totalEarnedThisRun}
-            prestigeCount={state.prestigeCount}
-            onAdvance={onAdvanceChapter}
-          />
-          {/* Ежедневные квесты (Этап 5, ТЗ 27.1) — под списком глав */}
-          <QuestsPanel quests={state.quests} onClaim={claimQuest} />
-        </>
-      )}
+              return (
+                <div key={tech.id} className={`tech-item ${isOwned ? 'owned' : ''}`}>
+                  <div className="tech-info">
+                    <span className="tech-name">{tech.name}</span>
+                    <span className="tech-desc">{tech.description}</span>
+                  </div>
+                  <button
+                    className={`tech-buy-btn ${canAfford && !isOwned ? 'affordable' : ''}`}
+                    onClick={() => buyTechnology(tech.id)}
+                    disabled={isOwned || !canAfford}
+                  >
+                    {isOwned ? '✅ Изучено' : `📊 ${tech.dataCost}`}
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </section>
+      </div>
+    )
+  }
 
-      {activeTab === 'achievements' && (
-        <div className="list-container">
-          {ACHIEVEMENTS.map((ach) => {
-            const isUnlocked = state.achievements.includes(ach.id);
-            return (
-              <AchievementItem
-                key={ach.id}
-                achievement={ach}
-                isUnlocked={isUnlocked}
-              />
-            );
-          })}
-        </div>
-      )}
+  // === Вкладка: МЕНЮ / ПРОЧЕЕ ===
+  return (
+    <div className="tab-content">
+      <div className="tab-header">
+        <h2 className="tab-title">⚙️ Меню</h2>
+      </div>
+      <div className="menu-section">
+        <p className="menu-info">
+          Глава: {CHAPTER_NAMES[(state.viewChapter ?? state.currentChapter) - 1]}
+          <br />
+          Престижей: {state.prestigeCount}
+          <br />
+          Всего заработано: {formatNumber(state.totalEarned, 'money')}
+          <br />
+          Фрагменты: {state.fragments ?? 0}/100
+        </p>
+      </div>
     </div>
-  );
-};
+  )
+}

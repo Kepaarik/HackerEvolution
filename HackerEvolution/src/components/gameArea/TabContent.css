@@ -1,0 +1,398 @@
+.tab-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tab-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.tab-title {
+  margin: 0;
+  font-size: 20px;
+  color: #fff;
+}
+
+.tab-resources {
+  display: flex;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.resource-money {
+  color: var(--color-compute, #00ff41);
+}
+.resource-data {
+  color: #7c4dff;
+}
+.resource-cores {
+  color: #ffa500;
+}
+.resource-fragments {
+  color: #00bfff;
+}
+
+/* === Переключатель глав === */
+.chapter-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.chapter-tab {
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  background: rgba(20, 20, 35, 0.8);
+  color: #aaa;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chapter-tab.active {
+  background: rgba(0, 255, 65, 0.15);
+  border-color: var(--color-compute, #00ff41);
+  color: #fff;
+}
+
+.chapter-tab.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* === Секции === */
+.upgrade-section,
+.quest-section,
+.menu-section {
+  background: rgba(15, 15, 30, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.section-title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  color: var(--color-compute, #00ff41);
+}
+
+/* === Апгрейды === */
+.upgrade-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upgrade-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(25, 25, 45, 0.8);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.upgrade-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.upgrade-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.upgrade-desc {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.upgrade-buy-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  background: rgba(0, 255, 65, 0.1);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.upgrade-buy-btn.affordable:hover {
+  background: rgba(0, 255, 65, 0.25);
+  transform: scale(1.03);
+}
+
+.upgrade-buy-btn.not-affordable {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: rgba(50, 50, 60, 0.3);
+  border-color: rgba(100, 100, 100, 0.3);
+}
+
+.all-bought-msg {
+  text-align: center;
+  color: var(--color-compute, #00ff41);
+  font-size: 14px;
+}
+
+/* === Престиж-тизер === */
+.prestige-teaser {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 165, 0, 0.1) 0%,
+    rgba(255, 165, 0, 0.05) 100%
+  );
+  border: 1px solid rgba(255, 165, 0, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.prestige-teaser-content h3 {
+  color: #ffa500;
+  margin: 0 0 8px;
+}
+
+.prestige-teaser-content p {
+  color: #ccc;
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+
+.prestige-open-btn {
+  padding: 10px 20px;
+  border-radius: 8px;
+  border: 2px solid #ffa500;
+  background: rgba(255, 165, 0, 0.15);
+  color: #ffa500;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.prestige-open-btn:hover:not(:disabled) {
+  background: rgba(255, 165, 0, 0.3);
+}
+
+.prestige-open-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.prestige-hint {
+  color: #888;
+  font-size: 13px;
+  text-align: center;
+  font-style: italic;
+}
+
+/* === Квесты === */
+.quest-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quest-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(25, 25, 45, 0.8);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.quest-item.completed {
+  border-color: rgba(0, 255, 65, 0.3);
+  background: rgba(0, 255, 65, 0.05);
+}
+
+.quest-info {
+  flex: 1;
+}
+
+.quest-name {
+  display: block;
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.quest-progress {
+  font-size: 12px;
+  color: var(--color-compute, #00ff41);
+}
+
+.quest-reward {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.quest-claim-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(100, 100, 100, 0.3);
+  background: rgba(50, 50, 60, 0.3);
+  color: #888;
+  font-size: 12px;
+  cursor: not-allowed;
+  white-space: nowrap;
+}
+
+.quest-claim-btn.claimable {
+  border-color: var(--color-compute, #00ff41);
+  background: rgba(0, 255, 65, 0.15);
+  color: var(--color-compute, #00ff41);
+  cursor: pointer;
+  animation: pulse 1.5s infinite;
+}
+
+.no-quests-msg {
+  color: #666;
+  text-align: center;
+  font-style: italic;
+}
+
+/* === Технологии === */
+.tech-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tech-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(25, 25, 45, 0.8);
+  border-radius: 8px;
+  border: 1px solid rgba(124, 77, 255, 0.1);
+}
+
+.tech-item.owned {
+  border-color: rgba(124, 77, 255, 0.3);
+  background: rgba(124, 77, 255, 0.05);
+}
+
+.tech-info {
+  flex: 1;
+}
+.tech-name {
+  display: block;
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+}
+.tech-desc {
+  display: block;
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.tech-buy-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(124, 77, 255, 0.3);
+  background: rgba(124, 77, 255, 0.1);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.tech-buy-btn.affordable:hover {
+  background: rgba(124, 77, 255, 0.25);
+}
+
+.tech-buy-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* === Кнопка перехода главы === */
+.advance-chapter-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 2px solid var(--color-compute, #00ff41);
+  background: rgba(0, 255, 65, 0.1);
+  color: var(--color-compute, #00ff41);
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 12px;
+}
+
+.advance-chapter-btn:hover {
+  background: rgba(0, 255, 65, 0.2);
+}
+
+/* === Меню === */
+.menu-info {
+  color: #ccc;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* === Анимации === */
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 255, 65, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(0, 255, 65, 0);
+  }
+}
+
+/* === Адаптивность === */
+@media (max-width: 374px) {
+  .tab-content {
+    padding: 12px;
+  }
+  .tab-title {
+    font-size: 17px;
+  }
+  .chapter-tabs {
+    gap: 4px;
+  }
+  .chapter-tab {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  .upgrade-item,
+  .quest-item,
+  .tech-item {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .upgrade-buy-btn,
+  .quest-claim-btn,
+  .tech-buy-btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+}

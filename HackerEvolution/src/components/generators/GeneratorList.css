@@ -1,0 +1,19 @@
+.generator-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.chapter-generators {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.no-generators-msg {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  padding: 20px;
+}
