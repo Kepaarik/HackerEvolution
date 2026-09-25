@@ -60,11 +60,16 @@ export function t(key: string): string {
 }
 
 /**
- * Хук для использования в React
+ * Хук для использования в React (основное имя)
  */
-export function useTranslation() {
-  return { t, locale: currentLocale, setLocale }
+export function useI18n() {
+  return { t, locale: currentLocale, setLocale, getLocale }
 }
+
+/**
+ * Алиас для совместимости
+ */
+export const useTranslation = useI18n
 
 // Инициализация при импорте
 initLocale()
