@@ -30,7 +30,7 @@ import { formatNumber } from './utils/NumberFormatter'
 import './App.css'
 
 function App() {
-  const { state, setState } = useGameState()
+  const { state, setState, isLoaded } = useGameState()
   const { getIncomePerSecond, getClickPower } = useIncome(state)
   const { clickEffects, handleHack, removeEffect } = useClickHandler(
     setState,
@@ -58,7 +58,7 @@ function App() {
 
   const incomePerSec = getIncomePerSecond()
 
-  // Эффект для проверки офлайн-награды при загрузке
+  // ===== Этап 8: Проверка офлайн-награды при загрузке =====
   useEffect(() => {
     const pending = sessionStorage.getItem('pending_offline_reward')
     if (pending) {
@@ -72,6 +72,7 @@ function App() {
     }
   }, [])
 
+  // Обработчик получения офлайн-награды
   const handleClaimOffline = (multiplier: 1 | 2) => {
     if (!offlineReward) return
     const finalEarnings = offlineReward.earnings * multiplier
@@ -84,6 +85,17 @@ function App() {
     }))
 
     setOfflineReward(null)
+  }
+
+  // Пока загружается — показываем экран загрузки (или можно просто рендерить как есть)
+  if (!isLoaded) {
+    return (
+      <div className="app-container loading">
+        <div className="loading-screen">
+          <h2 className="glow-text">Загрузка системы...</h2>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -150,7 +162,9 @@ function App() {
           buyPrestigeUpgrade={buyPrestigeUpgrade}
           prestigeTeaserVisible={prestige.teaserVisible}
           prestigeAvailable={prestige.available}
-          prestigeCoresToGain={prestige.preview.coresToGain}
+          prestigeCoresToGain={
+            prestige.preview?.coresToGain ?? prestige.coresPreview?.total ?? 0
+          }
           onOpenPrestige={prestige.openPrestigeScreen}
           onAdvanceChapter={chapters.advanceChapter}
           claimQuest={claimQuest}
@@ -159,6 +173,7 @@ function App() {
         />
       </main>
 
+      {/* Экран престижа */}
       {prestige.screenOpen && (
         <PrestigeScreen
           state={state}
@@ -170,7 +185,7 @@ function App() {
         />
       )}
 
-      {/* Экран офлайн-награды */}
+      {/* Этап 8: Экран офлайн-награды */}
       {offlineReward && (
         <OfflineRewardModal
           offlineEarnings={offlineReward.earnings}

@@ -4,29 +4,26 @@ import { formatNumber } from '../utils/NumberFormatter'
 
 interface OfflineRewardModalProps {
   offlineEarnings: number
-  offlineTime: number // в секундах
+  offlineTime: number
   onClaim: (multiplier: 1 | 2) => void
   onClose: () => void
 }
 
 /**
  * Экран офлайн-дохода (ТЗ 26.3)
+ * Показывается при возвращении в игру, если прошло > 5 минут
  */
 export function OfflineRewardModal({
   offlineEarnings,
   offlineTime,
   onClaim,
-  onClose,
 }: OfflineRewardModalProps) {
   const [claimed, setClaimed] = useState(false)
 
   const formatTime = (seconds: number): string => {
     const hours = Math.floor(seconds / 3600)
     const minutes = Math.floor((seconds % 3600) / 60)
-
-    if (hours > 0) {
-      return `${hours} ч. ${minutes} мин.`
-    }
+    if (hours > 0) return `${hours} ч. ${minutes} мин.`
     return `${minutes} мин.`
   }
 

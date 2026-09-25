@@ -7,6 +7,8 @@
   justify-content: center;
   z-index: 1000;
   animation: fadeIn 0.3s ease-in;
+  padding: var(--safe-area-top, 0) var(--safe-area-right, 0) var(--safe-area-bottom, 0)
+    var(--safe-area-left, 0);
 }
 
 .offline-modal {
@@ -29,21 +31,25 @@
   color: var(--color-compute, #00ff41);
   text-shadow: 0 0 10px var(--color-compute, #00ff41);
 }
+
 .offline-time {
   text-align: center;
   font-size: 18px;
   margin-bottom: 20px;
 }
+
 .offline-reward {
   text-align: center;
   font-size: 20px;
   margin-bottom: 24px;
 }
+
 .earnings-amount {
   color: var(--color-compute, #00ff41);
   font-size: 24px;
   text-shadow: 0 0 8px var(--color-compute, #00ff41);
 }
+
 .offline-info {
   margin-bottom: 24px;
   text-align: center;
@@ -56,6 +62,7 @@
   gap: 12px;
   margin-bottom: 20px;
 }
+
 .offline-actions button {
   flex: 1;
   min-height: 56px;
@@ -71,15 +78,18 @@
   background: var(--color-compute, #00ff41);
   color: #000;
 }
+
 .btn-primary:hover {
   background: #00cc33;
   transform: scale(1.02);
 }
+
 .btn-secondary {
   background: transparent;
   color: var(--color-compute, #00ff41);
   border: 2px solid var(--color-compute, #00ff41) !important;
 }
+
 .btn-secondary:hover {
   background: rgba(0, 255, 65, 0.1);
   transform: scale(1.02);
@@ -91,11 +101,13 @@
   align-items: center;
   gap: 4px;
 }
+
 .btn-hint {
   font-size: 11px;
   opacity: 0.7;
   font-weight: normal;
 }
+
 .offline-note {
   text-align: center;
   font-size: 12px;
@@ -111,6 +123,7 @@
     opacity: 1;
   }
 }
+
 @keyframes slideUp {
   from {
     transform: translateY(20px);
@@ -128,5 +141,8 @@
   }
   .offline-actions {
     flex-direction: column;
+  }
+  .offline-actions button {
+    width: 100%;
   }
 }
