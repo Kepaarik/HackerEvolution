@@ -109,7 +109,6 @@ export const STAGE_PROGRESS_MILESTONES: { count: number; fragments: number }[] =
 ]
 
 /** Остальные соотношения валют и ресурсов (Фрагменты) будут добавлены на Этапе 7. */
-export const SAVE_KEY = 'he_save'
 
 export const EVENTS = {
   COMPUTE_CHANGED: 'computeChanged',
