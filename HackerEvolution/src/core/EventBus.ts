@@ -89,6 +89,7 @@ export const EVENTS = {
   OFFLINE_REWARD: 'offlineReward',
   SETTINGS_CHANGED: 'settingsChanged',
   SAVE_COMPLETED: 'saveCompleted',
+  LOCALE_CHANGED: 'localeChanged',
 } as const
 
 /** Payload-ы ключевых событий. */
@@ -110,6 +111,7 @@ export interface GameEvents {
   [EVENTS.OFFLINE_REWARD]: { seconds: number; amount: number }
   [EVENTS.SETTINGS_CHANGED]: { key: string; value: unknown }
   [EVENTS.SAVE_COMPLETED]: undefined
+  [EVENTS.LOCALE_CHANGED]: { locale: string }
 }
 
 /** Глобальный синглтон шины событий игры. */
